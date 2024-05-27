@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+  server:
+    image: chromadb/chroma:${CHROMA_VERSION:-latest}
+    volumes:
+      - chroma_data:/chroma/chroma
+    command: "--host 0.0.0.0 --port 8000"
+    ports:
+      - "5000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - chroma
+    restart: unless-stopped
+
+networks:
+  chroma:
+    driver: bridge
+
+volumes:
+  chroma_data:
+    driver: local
